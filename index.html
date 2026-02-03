@@ -98,7 +98,7 @@
         }
         
         .form-section {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         
         .form-row {
@@ -134,6 +134,78 @@
         input:focus, select:focus {
             border-color: #2a5298;
             outline: none;
+        }
+        
+        /* Checkbox และส่วนคำนวณค่าน้ำมัน */
+        .calc-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .calc-option input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        
+        .calc-option label {
+            margin-bottom: 0;
+            font-weight: 600;
+            color: #2a5298;
+            cursor: pointer;
+        }
+        
+        .fuel-cost-group {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px dashed #2a5298;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .fuel-cost-group.show {
+            display: block;
+        }
+        
+        .unit-container {
+            position: relative;
+        }
+        
+        .unit-text {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+        
+        .fuel-price-info {
+            background-color: #e8f4ff;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        .fuel-price-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px dashed #ddd;
+        }
+        
+        .fuel-price-item:last-child {
+            border-bottom: none;
         }
         
         .time-input-container {
@@ -273,7 +345,7 @@
         }
         
         .stops-list {
-            max-height: 250px;
+            max-height: 200px;
             overflow-y: auto;
             border: 2px dashed #e0e0e0;
             border-radius: 10px;
@@ -423,6 +495,35 @@
             color: #1e3c72;
         }
         
+        .fuel-cost-section {
+            background-color: #f0f8f0;
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border: 2px solid #28a745;
+        }
+        
+        .fuel-cost-label {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .fuel-cost-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #28a745;
+            text-align: center;
+        }
+        
+        .fuel-details {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
         /* Custom scrollbar */
         .left-panel-content::-webkit-scrollbar,
         .stops-list::-webkit-scrollbar,
@@ -507,7 +608,7 @@
                 font-size: 1.6rem;
             }
             
-            .arrival-value {
+            .arrival-value, .fuel-cost-value {
                 font-size: 1.6rem;
             }
         }
@@ -534,7 +635,7 @@
             }
             
             .stops-list {
-                max-height: 200px;
+                max-height: 150px;
             }
         }
     </style>
@@ -577,6 +678,62 @@
                             <div class="hint-text">รูปแบบ 24 ชั่วโมง</div>
                         </div>
                         
+                        <!-- ตัวเลือกการคำนวณค่าน้ำมัน -->
+                        <div class="calc-option">
+                            <input type="checkbox" id="useFuelCalc">
+                            <label for="useFuelCalc">
+                                <i class="fas fa-gas-pump"></i> คำนวณค่าน้ำมัน
+                            </label>
+                        </div>
+                        
+                        <!-- ส่วนกรอกข้อมูลสำหรับคำนวณค่าน้ำมัน (ซ่อนไว้ตอนแรก) -->
+                        <div id="fuelCostGroup" class="fuel-cost-group">
+                            <div class="form-group">
+                                <label for="distance"><i class="fas fa-road"></i> ระยะทาง (กิโลเมตร)</label>
+                                <div class="unit-container">
+                                    <input type="number" id="distance" placeholder="0" min="0" step="0.1" value="50">
+                                    <span class="unit-text">กม.</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="fuelConsumption"><i class="fas fa-oil-can"></i> อัตราสิ้นเปลืองน้ำมัน</label>
+                                <div class="unit-container">
+                                    <input type="number" id="fuelConsumption" placeholder="0" min="0" step="0.1" value="10">
+                                    <span class="unit-text">กม./ลิตร</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="fuelType"><i class="fas fa-gas-pump"></i> ประเภทน้ำมัน</label>
+                                <select id="fuelType">
+                                    <option value="95" selected>เบนซิน 95</option>
+                                    <option value="91">เบนซิน 91</option>
+                                    <option value="diesel">ดีเซล</option>
+                                    <option value="e20">แก๊สโซฮอล์ E20</option>
+                                    <option value="e85">แก๊สโซฮอล์ E85</option>
+                                </select>
+                            </div>
+                            
+                            <!-- แสดงราคาน้ำมันจาก API -->
+                            <div class="fuel-price-info">
+                                <div class="fuel-price-item">
+                                    <span>เบนซิน 95:</span>
+                                    <span id="price95">กำลังโหลด...</span>
+                                </div>
+                                <div class="fuel-price-item">
+                                    <span>เบนซิน 91:</span>
+                                    <span id="price91">กำลังโหลด...</span>
+                                </div>
+                                <div class="fuel-price-item">
+                                    <span>ดีเซล:</span>
+                                    <span id="priceDiesel">กำลังโหลด...</span>
+                                </div>
+                                <div class="hint-text">ข้อมูลราคาน้ำมันอัปเดตล่าสุด</div>
+                            </div>
+                        </div>
+                        
+                        <!-- ส่วนกรอกเวลาเดินทาง -->
                         <div class="form-group">
                             <label for="travelTime"><i class="fas fa-hourglass-half"></i> ระยะเวลาเดินทาง</label>
                             <div class="time-input-container">
@@ -643,9 +800,6 @@
                     <div class="results-controls">
                         <h2 class="section-title"><i class="fas fa-calculator"></i> ผลการคำนวณเวลาเดินทาง</h2>
                         <div class="buttons-row">
-                            <button class="btn btn-primary" id="calculateBtn">
-                                <i class="fas fa-calculator"></i> คำนวณใหม่
-                            </button>
                             <button class="btn btn-secondary" id="resetBtn">
                                 <i class="fas fa-redo-alt"></i> รีเซ็ตทั้งหมด
                             </button>
@@ -655,11 +809,11 @@
                     <div class="results-display" id="resultsDisplay">
                         <div class="result-item">
                             <span class="result-label">จุดเริ่มต้น:</span>
-                            <span class="result-value" id="resultStart">บ้าน</span>
+                            <span class="result-value" id="resultStart">A</span>
                         </div>
                         <div class="result-item">
                             <span class="result-label">จุดหมายปลายทาง:</span>
-                            <span class="result-value" id="resultEnd">ที่ทำงาน</span>
+                            <span class="result-value" id="resultEnd">B</span>
                         </div>
                         <div class="result-item">
                             <span class="result-label">รูปแบบการเดินทาง:</span>
@@ -667,11 +821,11 @@
                         </div>
                         <div class="result-item">
                             <span class="result-label">เวลาออกเดินทาง:</span>
-                            <span class="result-value time-display" id="resultDepartureTime">09:00</span>
+                            <span class="result-value time-display" id="resultDepartureTime"> </span>
                         </div>
                         <div class="result-item">
                             <span class="result-label">เวลาเดินทางพื้นฐาน:</span>
-                            <span class="result-value time-display" id="resultBaseTime">45 min</span>
+                            <span class="result-value time-display" id="resultBaseTime"> </span>
                         </div>
                         <div class="result-item">
                             <span class="result-label">จำนวนจุดแวะพัก:</span>
@@ -679,17 +833,24 @@
                         </div>
                         <div class="result-item">
                             <span class="result-label">เวลาพักทั้งหมด:</span>
-                            <span class="result-value time-display" id="resultTotalStopTime">0 min</span>
+                            <span class="result-value time-display" id="resultTotalStopTime"> </span>
                         </div>
                         
                         <div class="total-time">
                             <span>เวลาเดินทางทั้งหมด: </span>
-                            <span class="total-time-value" id="resultTotalTime">45 min</span>
+                            <span class="total-time-value" id="resultTotalTime"> </span>
                         </div>
                         
                         <div class="arrival-time-section">
                             <div class="arrival-label">เวลาถึงโดยประมาณ:</div>
-                            <div class="arrival-value" id="resultArrivalTime">09:45</div>
+                            <div class="arrival-value" id="resultArrivalTime"> </div>
+                        </div>
+                        
+                        <!-- ส่วนแสดงผลค่าน้ำมัน -->
+                        <div id="fuelCostResult" class="fuel-cost-section" style="display: none;">
+                            <div class="fuel-cost-label">ค่าน้ำมันโดยประมาณ</div>
+                            <div class="fuel-cost-value" id="resultFuelCost">0 บาท</div>
+                            <div class="fuel-details" id="fuelDetails"></div>
                         </div>
                     </div>
                 </section>
@@ -715,8 +876,19 @@
         const clearStopsBtn = document.getElementById('clearStopsBtn');
         const stopsList = document.getElementById('stopsList');
         const emptyStopsMessage = document.getElementById('emptyStopsMessage');
-        const calculateBtn = document.getElementById('calculateBtn');
         const resetBtn = document.getElementById('resetBtn');
+        
+        // ฟังก์ชันใหม่สำหรับการคำนวณค่าน้ำมัน
+        const useFuelCalcCheckbox = document.getElementById('useFuelCalc');
+        const fuelCostGroup = document.getElementById('fuelCostGroup');
+        const distanceInput = document.getElementById('distance');
+        const fuelConsumptionInput = document.getElementById('fuelConsumption');
+        const fuelTypeSelect = document.getElementById('fuelType');
+        
+        // ราคาน้ำมันจาก API
+        const price95Element = document.getElementById('price95');
+        const price91Element = document.getElementById('price91');
+        const priceDieselElement = document.getElementById('priceDiesel');
         
         // ผลลัพธ์ elements
         const resultStart = document.getElementById('resultStart');
@@ -728,6 +900,18 @@
         const resultTotalStopTime = document.getElementById('resultTotalStopTime');
         const resultTotalTime = document.getElementById('resultTotalTime');
         const resultArrivalTime = document.getElementById('resultArrivalTime');
+        const fuelCostResult = document.getElementById('fuelCostResult');
+        const resultFuelCost = document.getElementById('resultFuelCost');
+        const fuelDetails = document.getElementById('fuelDetails');
+        
+        // ราคาน้ำมันล่าสุด (ถ้าไม่สามารถดึงจาก API ได้จะใช้ราคาเริ่มต้น)
+        let fuelPrices = {
+            '95': 30.85,   // ราคาเบนซิน 95 ล่าสุด
+            '91': 30.48,   // ราคาเบนซิน 91 ล่าสุด
+            'diesel': 30.44, // ราคาดีเซลล่าสุด
+            'e20': 29.14,  // ราคา E20
+            'e85': 26.59   // ราคา E85
+        };
         
         // ฟังก์ชันแปลงนาทีเป็นรูปแบบ hh hr mm min
         function minutesToHoursMinutes(totalMinutes) {
@@ -808,6 +992,64 @@
             };
         }
         
+        // ฟังก์ชันคำนวณค่าน้ำมัน
+        function calculateFuelCost(distanceKm, fuelConsumptionKmPerLiter, fuelType) {
+            if (distanceKm <= 0 || fuelConsumptionKmPerLiter <= 0) {
+                return { cost: 0, detail: "" };
+            }
+            
+            // ราคาน้ำมันตามประเภท
+            const fuelPrice = fuelPrices[fuelType] || fuelPrices['95'];
+            
+            // คำนวณปริมาณน้ำมันที่ใช้ (ลิตร)
+            const fuelUsed = distanceKm / fuelConsumptionKmPerLiter;
+            
+            // คำนวณค่าน้ำมัน
+            const cost = fuelUsed * fuelPrice;
+            
+            // สร้างข้อความแสดงรายละเอียดการคำนวณ
+            const detail = `ระยะทาง ${distanceKm} กม. ÷ อัตราสิ้นเปลือง ${fuelConsumptionKmPerLiter} กม./ลิตร = ใช้ ${fuelUsed.toFixed(2)} ลิตร × ราคา ${fuelPrice.toFixed(2)} บาท/ลิตร`;
+            
+            return { 
+                cost: cost,
+                fuelUsed: fuelUsed,
+                detail: detail
+            };
+        }
+        
+        // ฟังก์ชันดึงราคาน้ำมันจาก API (ใช้ข้อมูลจำลอง)
+        async function fetchFuelPrices() {
+            try {
+                // ข้อมูลราคาน้ำมันจาก API จำลอง
+                // ในสภาพแวดล้อมจริงควรใช้ API จริงเช่น https://api.pttor.com
+                const mockPrices = {
+                    '95': 30.85,   
+                    '91': 30.48,   
+                    'diesel': 30.44, 
+                    'e20': 29.14,  
+                    'e85': 26.59  
+                };
+                
+                // อัปเดตราคาน้ำมัน
+                fuelPrices = mockPrices;
+                
+                // อัปเดตแสดงผลราคา
+                price95Element.textContent = `${mockPrices['95'].toFixed(2)} บาท`;
+                price91Element.textContent = `${mockPrices['91'].toFixed(2)} บาท`;
+                priceDieselElement.textContent = `${mockPrices['diesel'].toFixed(2)} บาท`;
+                
+                console.log('อัปเดตราคาน้ำมันเรียบร้อยแล้ว');
+                
+            } catch (error) {
+                console.error('ไม่สามารถดึงราคาน้ำมันได้:', error);
+                
+                // แสดงราคาเริ่มต้นถ้าไม่สามารถดึงข้อมูลได้
+                price95Element.textContent = `${fuelPrices['95'].toFixed(2)} บาท`;
+                price91Element.textContent = `${fuelPrices['91'].toFixed(2)} บาท`;
+                priceDieselElement.textContent = `${fuelPrices['diesel'].toFixed(2)} บาท`;
+            }
+        }
+        
         // ฟังก์ชันเพิ่มจุดแวะพัก
         function addStop() {
             const stopName = stopNameInput.value.trim();
@@ -836,7 +1078,7 @@
             
             // รีเซ็ต input
             stopNameInput.value = '';
-            stopTimeInput.value = '15';
+            stopTimeInput.value = '';
             
             // อัปเดตรายการจุดแวะพัก
             updateStopsList();
@@ -940,7 +1182,8 @@
             const departureMinute = departureTime.minutes;
             
             // แสดงเวลาออกเดินทาง
-            const formattedDepartureTime = `${formatTimeNumber(departureHour)}:${formatTimeNumber(departureMinute)}`;
+            const formattedDepartureTime = departureHour === 0 && departureMinute === 0 ? 
+                '' : `${formatTimeNumber(departureHour)}:${formatTimeNumber(departureMinute)}`;
             resultDepartureTime.textContent = formattedDepartureTime;
             
             // ตรวจสอบเวลาเดินทาง
@@ -954,7 +1197,43 @@
             const totalTimeMinutes = travelMinutes + totalStopTime;
             
             // คำนวณเวลาถึง
-            const arrivalTime = calculateArrivalTime(departureHour, departureMinute, totalTimeMinutes);
+            let arrivalTimeText = ':';
+            let arrivalTimeColor = '#1e3c72';
+            
+            if (departureHour !== 0 || departureMinute !== 0) {
+                const arrivalTime = calculateArrivalTime(departureHour, departureMinute, totalTimeMinutes);
+                arrivalTimeText = arrivalTime.formattedTime;
+                
+                // เปลี่ยนสีถ้าเป็นวันถัดไป
+                if (arrivalTime.nextDay > 0) {
+                    arrivalTimeColor = '#dc3545';
+                }
+            }
+            
+            // คำนวณค่าน้ำมันถ้าเลือกใช้
+            let fuelCost = 0;
+            let fuelDetail = "";
+            
+            if (useFuelCalcCheckbox.checked) {
+                const distance = parseFloat(distanceInput.value) || 0;
+                const fuelConsumption = parseFloat(fuelConsumptionInput.value) || 0;
+                const fuelType = fuelTypeSelect.value;
+                
+                if (distance > 0 && fuelConsumption > 0) {
+                    const fuelResult = calculateFuelCost(distance, fuelConsumption, fuelType);
+                    fuelCost = fuelResult.cost;
+                    fuelDetail = fuelResult.detail;
+                    
+                    // แสดงผลค่าน้ำมัน
+                    fuelCostResult.style.display = 'block';
+                    resultFuelCost.textContent = `${fuelCost.toFixed(2)} บาท`;
+                    fuelDetails.textContent = fuelDetail;
+                } else {
+                    fuelCostResult.style.display = 'none';
+                }
+            } else {
+                fuelCostResult.style.display = 'none';
+            }
             
             // แสดงผลลัพธ์
             resultStart.textContent = startPoint;
@@ -964,28 +1243,28 @@
             resultStopsCount.textContent = stops.length;
             resultTotalStopTime.textContent = minutesToHoursMinutes(totalStopTime);
             resultTotalTime.textContent = minutesToHoursMinutes(totalTimeMinutes);
-            resultArrivalTime.textContent = arrivalTime.formattedTime;
-            
-            // เปลี่ยนสีถ้าเป็นวันถัดไป
-            if (arrivalTime.nextDay > 0) {
-                resultArrivalTime.style.color = '#dc3545';
-            } else {
-                resultArrivalTime.style.color = '#1e3c72';
-            }
+            resultArrivalTime.textContent = arrivalTimeText;
+            resultArrivalTime.style.color = arrivalTimeColor;
         }
         
         // ฟังก์ชันรีเซ็ตทั้งหมด
         function resetAll() {
             if (confirm('คุณต้องการรีเซ็ตข้อมูลทั้งหมดใช่หรือไม่?')) {
-                startPointInput.value = 'บ้าน';
-                endPointInput.value = 'ที่ทำงาน';
-                departureHourInput.value = '9';
-                departureMinuteInput.value = '0';
-                travelHoursInput.value = '0';
-                travelMinutesInput.value = '45';
+                startPointInput.value = 'A';
+                endPointInput.value = 'B';
+                departureHourInput.value = '';
+                departureMinuteInput.value = '';
+                travelHoursInput.value = '';
+                travelMinutesInput.value = '';
+                distanceInput.value = '50';
+                fuelConsumptionInput.value = '10';
+                fuelTypeSelect.value = '95';
+                useFuelCalcCheckbox.checked = false;
+                fuelCostGroup.classList.remove('show');
+                fuelCostResult.style.display = 'none';
                 transportSelect.value = 'car';
                 stopNameInput.value = '';
-                stopTimeInput.value = '15';
+                stopTimeInput.value = '';
                 
                 stops = [];
                 updateStopsList();
@@ -1014,8 +1293,18 @@
         function setupEventListeners() {
             addStopBtn.addEventListener('click', addStop);
             clearStopsBtn.addEventListener('click', clearAllStops);
-            calculateBtn.addEventListener('click', calculateTotalTime);
             resetBtn.addEventListener('click', resetAll);
+            
+            // Event listener สำหรับ checkbox การคำนวณค่าน้ำมัน
+            useFuelCalcCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    fuelCostGroup.classList.add('show');
+                } else {
+                    fuelCostGroup.classList.remove('show');
+                    fuelCostResult.style.display = 'none';
+                }
+                calculateTotalTime();
+            });
             
             stopNameInput.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') addStop();
@@ -1046,6 +1335,24 @@
                 calculateTotalTime();
             });
             
+            distanceInput.addEventListener('input', function() {
+                if (useFuelCalcCheckbox.checked) {
+                    calculateTotalTime();
+                }
+            });
+            
+            fuelConsumptionInput.addEventListener('input', function() {
+                if (useFuelCalcCheckbox.checked) {
+                    calculateTotalTime();
+                }
+            });
+            
+            fuelTypeSelect.addEventListener('change', function() {
+                if (useFuelCalcCheckbox.checked) {
+                    calculateTotalTime();
+                }
+            });
+            
             startPointInput.addEventListener('input', calculateTotalTime);
             endPointInput.addEventListener('input', calculateTotalTime);
             transportSelect.addEventListener('change', calculateTotalTime);
@@ -1055,6 +1362,13 @@
         function initApp() {
             setupEventListeners();
             updateStopsList();
+            
+            // ดึงราคาน้ำมันล่าสุด
+            fetchFuelPrices();
+            
+            // อัปเดตราคาน้ำมันทุก 5 นาที
+            setInterval(fetchFuelPrices, 5 * 60 * 1000);
+            
             calculateTotalTime();
         }
         
