@@ -748,7 +748,7 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="transport"><i class="fas fa-car"></i> รูปแบบการเดินทาง</label>
+                            <label for="transport"><i class="fas fa-car"></i> วิธีการเดินทาง</label>
                             <select id="transport">
                                 <option value="car" selected>รถยนต์</option>
                                 <option value="motorcycle">รถจักรยานยนต์</option>
@@ -802,6 +802,9 @@
                             <button class="btn btn-secondary" id="resetBtn">
                                 <i class="fas fa-redo-alt"></i> รีเซ็ตทั้งหมด
                             </button>
+                            <button class="btn btn-primary" id="copyResultsBtn">
+                                <i class="fas fa-copy"></i> คัดลอกผลลัพธ์
+                            </button>
                         </div>
                     </div>
                     
@@ -815,7 +818,7 @@
                             <span class="result-value" id="resultEnd">B</span>
                         </div>
                         <div class="result-item">
-                            <span class="result-label">รูปแบบการเดินทาง:</span>
+                            <span class="result-label">วิธีการเดินทาง:</span>
                             <span class="result-value" id="resultTransport">รถยนต์</span>
                         </div>
                         <div class="result-item">
@@ -875,6 +878,7 @@
         const stopsList = document.getElementById('stopsList');
         const emptyStopsMessage = document.getElementById('emptyStopsMessage');
         const resetBtn = document.getElementById('resetBtn');
+        const copyResultsBtn = document.getElementById('copyResultsBtn');
         
         // ฟังก์ชันใหม่สำหรับการคำนวณค่าน้ำมัน
         const useFuelCalcCheckbox = document.getElementById('useFuelCalc');
@@ -1285,11 +1289,68 @@
             }
         }
         
+        // ฟังก์ชันคัดลอกผลลัพธ์ไปยังคลิปบอร์ด
+        async function copyResultsToClipboard() {
+            try {
+                // รวบรวมข้อมูลทั้งหมดจากผลลัพธ์
+                const results = {
+                    startPoint: resultStart.textContent,
+                    endPoint: resultEnd.textContent,
+                    transport: resultTransport.textContent,
+                    departureTime: resultDepartureTime.textContent,
+                    baseTime: resultBaseTime.textContent,
+                    stopsCount: resultStopsCount.textContent,
+                    totalStopTime: resultTotalStopTime.textContent,
+                    totalTime: resultTotalTime.textContent,
+                    arrivalTime: resultArrivalTime.textContent,
+                    fuelCost: useFuelCalcCheckbox.checked ? resultFuelCost.textContent : null
+                };
+                
+                // สร้างข้อความที่จัดรูปแบบ
+                let formattedText = `LogiTrip - ผลการคำนวณเวลาเดินทาง\n`;
+                formattedText += `==============================\n`;
+                formattedText += `จุดเริ่มต้น: ${results.startPoint}\n`;
+                formattedText += `จุดหมายปลายทาง: ${results.endPoint}\n`;
+                formattedText += `วิธีการเดินทาง: ${results.transport}\n`;
+                
+                if (results.departureTime) {
+                    formattedText += `เวลาออกเดินทาง: ${results.departureTime}\n`;
+                }
+                
+                formattedText += `เวลาเดินทางพื้นฐาน: ${results.baseTime}\n`;
+                formattedText += `จำนวนจุดแวะพัก: ${results.stopsCount}\n`;
+                formattedText += `เวลาพักทั้งหมด: ${results.totalStopTime}\n`;
+                formattedText += `เวลาเดินทางทั้งหมด: ${results.totalTime}\n`;
+                formattedText += `==============================\n`;
+                
+                if (results.arrivalTime) {
+                    formattedText += `เวลาถึงโดยประมาณ: ${results.arrivalTime}\n`;
+                }
+                
+                if (results.fuelCost) {
+                    formattedText += `ค่าน้ำมันโดยประมาณ: ${results.fuelCost}\n`;
+                }
+                
+                formattedText += `\nอัปเดตเมื่อ: ${new Date().toLocaleString('th-TH')}`;
+                
+                // คัดลอกไปยังคลิปบอร์ด
+                await navigator.clipboard.writeText(formattedText);
+                
+                // แสดงข้อความยืนยัน
+                alert('คัดลอกผลลัพธ์ไปยังคลิปบอร์ดเรียบร้อยแล้ว!');
+                
+            } catch (error) {
+                console.error('เกิดข้อผิดพลาดในการคัดลอก:', error);
+                alert('ไม่สามารถคัดลอกผลลัพธ์ได้ กรุณาลองอีกครั้ง');
+            }
+        }
+        
         // ตั้งค่า event listeners
         function setupEventListeners() {
             addStopBtn.addEventListener('click', addStop);
             clearStopsBtn.addEventListener('click', clearAllStops);
             resetBtn.addEventListener('click', resetAll);
+            copyResultsBtn.addEventListener('click', copyResultsToClipboard);
             
             // Event listener สำหรับ checkbox การคำนวณค่าน้ำมัน
             useFuelCalcCheckbox.addEventListener('change', function() {
