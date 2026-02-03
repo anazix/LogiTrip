@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiTrip</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Prompt', sans-serif;
+        }
+        
+        body {
+            background-color: #f0f7ff;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 100, 0.1);
+            overflow: hidden;
+            height: calc(100vh - 40px);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        header h1 {
+            margin-bottom: 8px;
+            font-size: 1.8rem;
+        }
+        
+        header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+        
+        .app-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            padding: 0;
+        }
+        
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #e0e0e0;
+            min-width: 350px;
+            max-width: 450px;
+            overflow: hidden;
+        }
+        
+        .left-panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .right-panel {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            color: #2a5298;
+            font-size: 1.2rem;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8f4ff;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 100%;
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            border-color: #2a5298;
+            outline: none;
+        }
+        
+        .time-input-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .time-input-group {
+            flex: 1;
+            position: relative;
+        }
+        
+        .time-input-group input {
+            padding-left: 50px;
+        }
+        
+        .time-input-group:after {
+            content: attr(data-label);
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-weight: 600;
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+        
+        .time-separator {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2a5298;
+            margin: 0 5px;
+        }
+        
+        .departure-time-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .departure-time-group {
+            flex: 1;
+            position: relative;
+        }
+        
+        .departure-time-group input {
+            padding-left: 50px;
+        }
+        
+        .departure-time-group:after {
+            content: attr(data-label);
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-weight: 600;
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+        
+        .hint-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 8px;
+            font-style: italic;
+            padding-left: 5px;
+        }
+        
+        .stops-section {
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-primary {
+            background-color: #2a5298;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e3c72;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .buttons-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .stops-list {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 2px dashed #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+        }
+        
+        .stop-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background-color: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 5px solid #2a5298;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stop-details {
+            flex-grow: 1;
+        }
+        
+        .stop-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #1e3c72;
+            margin-bottom: 4px;
+        }
+        
+        .stop-time {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .stop-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .empty-message {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+            font-style: italic;
+            font-size: 0.95rem;
+        }
+        
+        .scroll-hint {
+            font-size: 0.85rem;
+            color: #888;
+            text-align: center;
+            margin-top: 10px;
+            font-style: italic;
+            padding: 8px;
+            background-color: #f0f7ff;
+            border-radius: 6px;
+        }
+        
+        .results-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .results-controls {
+            margin-bottom: 20px;
+        }
+        
+        .results-display {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            overflow-y: auto;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            color: #555;
+            font-size: 1.05rem;
+        }
+        
+        .result-value {
+            font-weight: 700;
+            color: #1e3c72;
+            font-size: 1.2rem;
+        }
+        
+        .time-display {
+            font-size: 1.2rem;
+        }
+        
+        .arrival-time-display {
+            font-size: 1.2rem;
+            color: #28a745;
+        }
+        
+        .total-time {
+            background-color: #e8f4ff;
+            padding: 14px;
+            border-radius: 10px;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1e3c72;
+        }
+        
+        .total-time-value {
+            font-size: 1.9rem;
+            margin-left: 10px;
+        }
+        
+        .arrival-time-section {
+            background-color: #e8f4ff;
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: center;
+            border: 2px solid #2a5298;
+        }
+        
+        .arrival-label {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        
+        .arrival-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e3c72;
+        }
+        
+        /* Custom scrollbar */
+        .left-panel-content::-webkit-scrollbar,
+        .stops-list::-webkit-scrollbar,
+        .results-display::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .left-panel-content::-webkit-scrollbar-track,
+        .stops-list::-webkit-scrollbar-track,
+        .results-display::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .left-panel-content::-webkit-scrollbar-thumb,
+        .stops-list::-webkit-scrollbar-thumb,
+        .results-display::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        .left-panel-content::-webkit-scrollbar-thumb:hover,
+        .stops-list::-webkit-scrollbar-thumb:hover,
+        .results-display::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+        
+        @media (max-width: 1024px) {
+            .app-content {
+                flex-direction: column;
+            }
+            
+            .left-panel {
+                max-width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+                max-height: 60vh;
+            }
+            
+            .right-panel {
+                max-height: 40vh;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                height: calc(100vh - 20px);
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .form-group {
+                margin-bottom: 15px;
+            }
+            
+            .buttons-row {
+                flex-wrap: wrap;
+            }
+            
+            .stop-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .stop-actions {
+                margin-top: 8px;
+                align-self: flex-end;
+            }
+            
+            .time-input-container, .departure-time-container {
+                flex-direction: row;
+            }
+            
+            header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .arrival-value {
+                font-size: 1.6rem;
+            }
+        }
+        
+        @media (max-height: 700px) {
+            .form-section, .stops-section {
+                margin-bottom: 15px;
+            }
+            
+            .form-group {
+                margin-bottom: 10px;
+            }
+            
+            input, select {
+                padding: 10px 12px;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+            }
+            
+            .stop-item {
+                padding: 10px;
+            }
+            
+            .stops-list {
+                max-height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-route"></i> LogiTrip</h1>
+        </header>
+        
+        <div class="app-content">
+            <!-- แถบด้านซ้ายสำหรับกรอกข้อมูล -->
+            <div class="left-panel">
+                <div class="left-panel-content">
+                    <!-- ข้อมูลการเดินทาง -->
+                    <section class="form-section">
+                        <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> ข้อมูลการเดินทาง</h2>
+                        
+                        <div class="form-group">
+                            <label for="startPoint"><i class="fas fa-play-circle"></i> จุดเริ่มต้น</label>
+                            <input type="text" id="startPoint" placeholder="กรอกจุดเริ่มต้น" value="บ้าน">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="endPoint"><i class="fas fa-flag-checkered"></i> จุดหมายปลายทาง</label>
+                            <input type="text" id="endPoint" placeholder="กรอกจุดหมายปลายทาง" value="ที่ทำงาน">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="departureTime"><i class="fas fa-clock"></i> เวลาออกเดินทาง</label>
+                            <div class="departure-time-container">
+                                <div class="departure-time-group" data-label="ชม.">
+                                    <input type="number" id="departureHour" placeholder="0" min="0" max="23">
+                                </div>
+                                <div class="time-separator">:</div>
+                                <div class="departure-time-group" data-label="นาที">
+                                    <input type="number" id="departureMinute" placeholder="0" min="0" max="59">
+                                </div>
+                            </div>
+                            <div class="hint-text">รูปแบบ 24 ชั่วโมง</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="travelTime"><i class="fas fa-hourglass-half"></i> ระยะเวลาเดินทาง</label>
+                            <div class="time-input-container">
+                                <div class="time-input-group" data-label="ชม.">
+                                    <input type="number" id="travelHours" placeholder="0" min="0" max="99">
+                                </div>
+                                <div class="time-separator">:</div>
+                                <div class="time-input-group" data-label="นาที">
+                                    <input type="number" id="travelMinutes" placeholder="0" min="0" max="59">
+                                </div>
+                            </div>
+                            <div class="hint-text">เวลาที่ใช้ในการเดินทาง (ไม่รวมจุดแวะพัก)</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="transport"><i class="fas fa-car"></i> รูปแบบการเดินทาง</label>
+                            <select id="transport">
+                                <option value="car" selected>รถยนต์</option>
+                                <option value="motorcycle">รถจักรยานยนต์</option>
+                                <option value="public">ขนส่งสาธารณะ</option>
+                                <option value="walk">เดิน</option>
+                                <option value="bike">จักรยาน</option>
+                            </select>
+                        </div>
+                    </section>
+                    
+                    <!-- จุดแวะพัก -->
+                    <section class="stops-section">
+                        <h2 class="section-title"><i class="fas fa-map-pin"></i> จุดแวะพัก</h2>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="stopName"><i class="fas fa-store"></i> ชื่อจุดแวะพัก</label>
+                                <input type="text" id="stopName" placeholder="เช่น ร้านกาแฟ, ปั๊มน้ำมัน">
+                            </div>
+                            <div class="form-group">
+                                <label for="stopTime"><i class="fas fa-hourglass-half"></i> เวลาแวะพัก (นาที)</label>
+                                <input type="number" id="stopTime" placeholder="0" min="0">
+                            </div>
+                        </div>
+                        
+                        <div class="buttons-row">
+                            <button class="btn btn-success" id="addStopBtn">
+                                <i class="fas fa-plus-circle"></i> เพิ่มจุดแวะพัก
+                            </button>
+                            <button class="btn btn-secondary" id="clearStopsBtn">
+                                <i class="fas fa-trash-alt"></i> ล้างทั้งหมด
+                            </button>
+                        </div>
+                        
+                        <div class="stops-list" id="stopsList">
+                            <div class="empty-message" id="emptyStopsMessage">
+                                <i class="fas fa-info-circle"></i> ยังไม่มีจุดแวะพัก
+                            </div>
+                        </div>
+                        
+                    </section>
+                </div>
+            </div>
+            
+            <!-- แถบด้านขวาเพื่อแสดงผลลัพธ์ -->
+            <div class="right-panel">
+                <section class="results-section">
+                    <div class="results-controls">
+                        <h2 class="section-title"><i class="fas fa-calculator"></i> ผลการคำนวณเวลาเดินทาง</h2>
+                        <div class="buttons-row">
+                            <button class="btn btn-primary" id="calculateBtn">
+                                <i class="fas fa-calculator"></i> คำนวณใหม่
+                            </button>
+                            <button class="btn btn-secondary" id="resetBtn">
+                                <i class="fas fa-redo-alt"></i> รีเซ็ตทั้งหมด
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="results-display" id="resultsDisplay">
+                        <div class="result-item">
+                            <span class="result-label">จุดเริ่มต้น:</span>
+                            <span class="result-value" id="resultStart">บ้าน</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">จุดหมายปลายทาง:</span>
+                            <span class="result-value" id="resultEnd">ที่ทำงาน</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">รูปแบบการเดินทาง:</span>
+                            <span class="result-value" id="resultTransport">รถยนต์</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">เวลาออกเดินทาง:</span>
+                            <span class="result-value time-display" id="resultDepartureTime">09:00</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">เวลาเดินทางพื้นฐาน:</span>
+                            <span class="result-value time-display" id="resultBaseTime">45 min</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">จำนวนจุดแวะพัก:</span>
+                            <span class="result-value" id="resultStopsCount">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">เวลาพักทั้งหมด:</span>
+                            <span class="result-value time-display" id="resultTotalStopTime">0 min</span>
+                        </div>
+                        
+                        <div class="total-time">
+                            <span>เวลาเดินทางทั้งหมด: </span>
+                            <span class="total-time-value" id="resultTotalTime">45 min</span>
+                        </div>
+                        
+                        <div class="arrival-time-section">
+                            <div class="arrival-label">เวลาถึงโดยประมาณ:</div>
+                            <div class="arrival-value" id="resultArrivalTime">09:45</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ข้อมูลจุดแวะพัก
+        let stops = [];
+        
+        // อ้างอิง DOM elements
+        const startPointInput = document.getElementById('startPoint');
+        const endPointInput = document.getElementById('endPoint');
+        const departureHourInput = document.getElementById('departureHour');
+        const departureMinuteInput = document.getElementById('departureMinute');
+        const travelHoursInput = document.getElementById('travelHours');
+        const travelMinutesInput = document.getElementById('travelMinutes');
+        const transportSelect = document.getElementById('transport');
+        const stopNameInput = document.getElementById('stopName');
+        const stopTimeInput = document.getElementById('stopTime');
+        const addStopBtn = document.getElementById('addStopBtn');
+        const clearStopsBtn = document.getElementById('clearStopsBtn');
+        const stopsList = document.getElementById('stopsList');
+        const emptyStopsMessage = document.getElementById('emptyStopsMessage');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        // ผลลัพธ์ elements
+        const resultStart = document.getElementById('resultStart');
+        const resultEnd = document.getElementById('resultEnd');
+        const resultTransport = document.getElementById('resultTransport');
+        const resultDepartureTime = document.getElementById('resultDepartureTime');
+        const resultBaseTime = document.getElementById('resultBaseTime');
+        const resultStopsCount = document.getElementById('resultStopsCount');
+        const resultTotalStopTime = document.getElementById('resultTotalStopTime');
+        const resultTotalTime = document.getElementById('resultTotalTime');
+        const resultArrivalTime = document.getElementById('resultArrivalTime');
+        
+        // ฟังก์ชันแปลงนาทีเป็นรูปแบบ hh hr mm min
+        function minutesToHoursMinutes(totalMinutes) {
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            
+            if (hours === 0) {
+                return `${minutes} min`;
+            } else if (minutes === 0) {
+                return `${hours} hr`;
+            } else {
+                return `${hours} hr ${minutes} min`;
+            }
+        }
+        
+        // ฟังก์ชันแปลงรูปแบบ hh:mm เป็นนาที
+        function timeToMinutes(hours, minutes) {
+            return (parseInt(hours) || 0) * 60 + (parseInt(minutes) || 0);
+        }
+        
+        // ฟังก์ชันตรวจสอบและจัดรูปแบบค่าชั่วโมงและนาที
+        function validateTimeInput(hoursInput, minutesInput, maxHour = 99) {
+            let hours = parseInt(hoursInput.value) || 0;
+            let minutes = parseInt(minutesInput.value) || 0;
+            
+            // ตรวจสอบและปรับค่าหากเกินขีดจำกัด
+            if (minutes >= 60) {
+                hours += Math.floor(minutes / 60);
+                minutes = minutes % 60;
+                minutesInput.value = minutes;
+            }
+            
+            if (hours > maxHour) {
+                hours = maxHour;
+                hoursInput.value = hours;
+            }
+            
+            // ตรวจสอบค่าติดลบ
+            if (hours < 0) {
+                hours = 0;
+                hoursInput.value = hours;
+            }
+            
+            if (minutes < 0) {
+                minutes = 0;
+                minutesInput.value = minutes;
+            }
+            
+            return { hours, minutes };
+        }
+        
+        // ฟังก์ชันจัดรูปแบบเวลาเป็น 2 หลัก
+        function formatTimeNumber(num) {
+            return num < 10 ? `0${num}` : `${num}`;
+        }
+        
+        // ฟังก์ชันคำนวณเวลาถึง
+        function calculateArrivalTime(departureHour, departureMinute, totalTravelMinutes) {
+            // แปลงเวลาออกเดินทางเป็นนาทีทั้งหมด
+            let departureTotalMinutes = departureHour * 60 + departureMinute;
+            
+            // เพิ่มเวลาการเดินทางทั้งหมด
+            let arrivalTotalMinutes = departureTotalMinutes + totalTravelMinutes;
+            
+            // คำนวณชั่วโมงและนาทีใหม่
+            let arrivalHour = Math.floor(arrivalTotalMinutes / 60) % 24;
+            let arrivalMinute = arrivalTotalMinutes % 60;
+            
+            // ถ้าวันถัดไป
+            let nextDay = Math.floor(arrivalTotalMinutes / (24 * 60));
+            let dayText = nextDay > 0 ? ` (+${nextDay} วัน)` : '';
+            
+            return {
+                hour: arrivalHour,
+                minute: arrivalMinute,
+                formattedTime: `${formatTimeNumber(arrivalHour)}:${formatTimeNumber(arrivalMinute)}${dayText}`,
+                nextDay: nextDay
+            };
+        }
+        
+        // ฟังก์ชันเพิ่มจุดแวะพัก
+        function addStop() {
+            const stopName = stopNameInput.value.trim();
+            const stopTime = parseInt(stopTimeInput.value) || 0;
+            
+            if (!stopName) {
+                alert('กรุณากรอกชื่อจุดแวะพัก');
+                stopNameInput.focus();
+                return;
+            }
+            
+            if (stopTime <= 0) {
+                alert('กรุณากรอกเวลาแวะพักที่ถูกต้อง (มากกว่า 0 นาที)');
+                stopTimeInput.focus();
+                return;
+            }
+            
+            // เพิ่มจุดแวะพักในอาร์เรย์
+            const newStop = {
+                id: Date.now(),
+                name: stopName,
+                time: stopTime
+            };
+            
+            stops.push(newStop);
+            
+            // รีเซ็ต input
+            stopNameInput.value = '';
+            stopTimeInput.value = '15';
+            
+            // อัปเดตรายการจุดแวะพัก
+            updateStopsList();
+            
+            // คำนวณอัตโนมัติ
+            calculateTotalTime();
+            
+            // เลื่อนไปที่จุดแวะพักล่าสุด
+            setTimeout(() => {
+                stopsList.scrollTop = stopsList.scrollHeight;
+            }, 100);
+        }
+        
+        // ฟังก์ชันอัปเดตรายการจุดแวะพัก
+        function updateStopsList() {
+            if (stops.length > 0) {
+                emptyStopsMessage.style.display = 'none';
+            } else {
+                emptyStopsMessage.style.display = 'block';
+            }
+            
+            stopsList.innerHTML = '';
+            stopsList.appendChild(emptyStopsMessage);
+            
+            stops.forEach(stop => {
+                const stopElement = document.createElement('div');
+                stopElement.className = 'stop-item';
+                stopElement.innerHTML = `
+                    <div class="stop-details">
+                        <div class="stop-name">${stop.name}</div>
+                        <div class="stop-time">เวลาแวะพัก: ${stop.time} นาที</div>
+                    </div>
+                    <div class="stop-actions">
+                        <button class="btn btn-secondary edit-stop-btn" data-id="${stop.id}" title="แก้ไข">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger delete-stop-btn" data-id="${stop.id}" title="ลบ">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                
+                stopsList.appendChild(stopElement);
+            });
+            
+            document.querySelectorAll('.edit-stop-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const stopId = parseInt(this.getAttribute('data-id'));
+                    editStop(stopId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-stop-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const stopId = parseInt(this.getAttribute('data-id'));
+                    deleteStop(stopId);
+                });
+            });
+        }
+        
+        // ฟังก์ชันแก้ไขจุดแวะพัก
+        function editStop(stopId) {
+            const stopIndex = stops.findIndex(stop => stop.id === stopId);
+            
+            if (stopIndex !== -1) {
+                const stop = stops[stopIndex];
+                
+                stopNameInput.value = stop.name;
+                stopTimeInput.value = stop.time;
+                
+                stops.splice(stopIndex, 1);
+                updateStopsList();
+                calculateTotalTime();
+                stopNameInput.focus();
+            }
+        }
+        
+        // ฟังก์ชันลบจุดแวะพัก
+        function deleteStop(stopId) {
+            if (confirm('คุณต้องการลบจุดแวะพักนี้ใช่หรือไม่?')) {
+                stops = stops.filter(stop => stop.id !== stopId);
+                updateStopsList();
+                calculateTotalTime();
+            }
+        }
+        
+        // ฟังก์ชันคำนวณเวลาเดินทางทั้งหมด
+        function calculateTotalTime() {
+            const startPoint = startPointInput.value.trim();
+            const endPoint = endPointInput.value.trim();
+            const transport = transportSelect.options[transportSelect.selectedIndex].text;
+            
+            if (!startPoint || !endPoint) {
+                alert('กรุณากรอกจุดเริ่มต้นและจุดหมายปลายทาง');
+                return;
+            }
+            
+            // ตรวจสอบเวลาออกเดินทาง
+            const departureTime = validateTimeInput(departureHourInput, departureMinuteInput, 23);
+            const departureHour = departureTime.hours;
+            const departureMinute = departureTime.minutes;
+            
+            // แสดงเวลาออกเดินทาง
+            const formattedDepartureTime = `${formatTimeNumber(departureHour)}:${formatTimeNumber(departureMinute)}`;
+            resultDepartureTime.textContent = formattedDepartureTime;
+            
+            // ตรวจสอบเวลาเดินทาง
+            const travelTime = validateTimeInput(travelHoursInput, travelMinutesInput, 99);
+            const travelMinutes = timeToMinutes(travelTime.hours, travelTime.minutes);
+            
+            // คำนวณเวลาพักทั้งหมด
+            const totalStopTime = stops.reduce((sum, stop) => sum + stop.time, 0);
+            
+            // คำนวณเวลาทั้งหมด
+            const totalTimeMinutes = travelMinutes + totalStopTime;
+            
+            // คำนวณเวลาถึง
+            const arrivalTime = calculateArrivalTime(departureHour, departureMinute, totalTimeMinutes);
+            
+            // แสดงผลลัพธ์
+            resultStart.textContent = startPoint;
+            resultEnd.textContent = endPoint;
+            resultTransport.textContent = transport;
+            resultBaseTime.textContent = minutesToHoursMinutes(travelMinutes);
+            resultStopsCount.textContent = stops.length;
+            resultTotalStopTime.textContent = minutesToHoursMinutes(totalStopTime);
+            resultTotalTime.textContent = minutesToHoursMinutes(totalTimeMinutes);
+            resultArrivalTime.textContent = arrivalTime.formattedTime;
+            
+            // เปลี่ยนสีถ้าเป็นวันถัดไป
+            if (arrivalTime.nextDay > 0) {
+                resultArrivalTime.style.color = '#dc3545';
+            } else {
+                resultArrivalTime.style.color = '#1e3c72';
+            }
+        }
+        
+        // ฟังก์ชันรีเซ็ตทั้งหมด
+        function resetAll() {
+            if (confirm('คุณต้องการรีเซ็ตข้อมูลทั้งหมดใช่หรือไม่?')) {
+                startPointInput.value = 'บ้าน';
+                endPointInput.value = 'ที่ทำงาน';
+                departureHourInput.value = '9';
+                departureMinuteInput.value = '0';
+                travelHoursInput.value = '0';
+                travelMinutesInput.value = '45';
+                transportSelect.value = 'car';
+                stopNameInput.value = '';
+                stopTimeInput.value = '15';
+                
+                stops = [];
+                updateStopsList();
+                calculateTotalTime();
+                
+                // เลื่อนไปด้านบน
+                document.querySelector('.left-panel-content').scrollTop = 0;
+            }
+        }
+        
+        // ฟังก์ชันล้างจุดแวะพักทั้งหมด
+        function clearAllStops() {
+            if (stops.length === 0) {
+                alert('ไม่มีจุดแวะพักให้ลบ');
+                return;
+            }
+            
+            if (confirm('คุณต้องการลบจุดแวะพักทั้งหมดใช่หรือไม่?')) {
+                stops = [];
+                updateStopsList();
+                calculateTotalTime();
+            }
+        }
+        
+        // ตั้งค่า event listeners
+        function setupEventListeners() {
+            addStopBtn.addEventListener('click', addStop);
+            clearStopsBtn.addEventListener('click', clearAllStops);
+            calculateBtn.addEventListener('click', calculateTotalTime);
+            resetBtn.addEventListener('click', resetAll);
+            
+            stopNameInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addStop();
+            });
+            
+            stopTimeInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addStop();
+            });
+            
+            // เมื่อข้อมูลเปลี่ยนให้คำนวณใหม่
+            departureHourInput.addEventListener('change', function() {
+                validateTimeInput(departureHourInput, departureMinuteInput, 23);
+                calculateTotalTime();
+            });
+            
+            departureMinuteInput.addEventListener('change', function() {
+                validateTimeInput(departureHourInput, departureMinuteInput, 23);
+                calculateTotalTime();
+            });
+            
+            travelMinutesInput.addEventListener('change', function() {
+                validateTimeInput(travelHoursInput, travelMinutesInput, 99);
+                calculateTotalTime();
+            });
+            
+            travelHoursInput.addEventListener('change', function() {
+                validateTimeInput(travelHoursInput, travelMinutesInput, 99);
+                calculateTotalTime();
+            });
+            
+            startPointInput.addEventListener('input', calculateTotalTime);
+            endPointInput.addEventListener('input', calculateTotalTime);
+            transportSelect.addEventListener('change', calculateTotalTime);
+        }
+        
+        // เริ่มต้นแอพ
+        function initApp() {
+            setupEventListeners();
+            updateStopsList();
+            calculateTotalTime();
+        }
+        
+        // เริ่มต้นแอพพลิเคชัน
+        initApp();
+    </script>
+</body>
+</html>
